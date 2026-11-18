@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>NOVA — Sohbet</title>
+  <link rel="stylesheet" href="/static/chat.css">
+</head>
+<body>
+  <main class="chat-shell">
+    <aside class="sidebar">
+      <div class="nova-logo"><span></span>NOVA</div>
+      <button class="new-chat" id="newChat" type="button"><b>＋</b> Yeni sohbet</button>
+      <div class="sidebar-footer">
+        <div class="user-avatar"><img src="{{ user.picture }}" alt="" onerror="this.style.display='none'"><i>{{ user.name[:1] if user.name else 'K' }}</i></div>
+        <div><strong>{{ user.name or user.email }}</strong><small>{{ user.email }}</small></div>
+        <button id="logoutButton" type="button" aria-label="Çıkış">↗</button>
+      </div>
+    </aside>
+
+    <section class="chat-panel">
+      <header class="chat-header">
+        <button class="menu-button" id="menuButton" type="button">☰</button>
+        <div><span class="status-dot"></span><strong>NOVA</strong></div>
+        <button class="location-button" id="locationButton" type="button" aria-label="Konum paylaşım izni">◎</button>
+      </header>
+      <div class="messages" id="messages"></div>
+      <form class="composer" id="composer">
+        <textarea id="messageInput" rows="1" maxlength="4000" placeholder="NOVA'ya bir şey sor..."></textarea>
+        <button type="submit" aria-label="Gönder">↑</button>
+      </form>
+    </section>
+  </main>
+  <script src="/static/chat.js"></script>
+</body>
+</html>

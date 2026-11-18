@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NOVA — Host Girişi</title>
+  <link rel="stylesheet" href="/static/chat.css">
+</head>
+<body class="login-page host-login">
+  <form class="login-card" id="hostForm">
+    <div class="nova-logo"><span></span>HOST</div>
+    <h1>Yönetici giriş</h1>
+    <p>Bu alan yalnızca sistem sahibine ayrılmıştır.</p>
+    <input name="name" type="text" autocomplete="username" placeholder="Host adı" required>
+    <input name="password" type="password" autocomplete="current-password" placeholder="Şifre" required>
+    <button class="host-submit" type="submit">Giriş yap</button>
+  </form>
+  <script>
+    document.getElementById("hostForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      const result = await fetch("/api/host/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({name: data.get("name"), password: data.get("password")})
+      });
+      if (result.ok) location.href = "/host";
+      else alert((await result.json()).error || "Giriş başarısız");
+    });
+  </script>
+</body>
+</html>

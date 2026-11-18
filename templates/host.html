@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NOVA — Host Panel</title>
+  <link rel="stylesheet" href="/static/chat.css">
+</head>
+<body class="host-page">
+  <header class="host-header">
+    <div class="nova-logo"><span></span>HOST</div>
+    <button id="hostLogout" type="button">Çıkış</button>
+  </header>
+  <main class="host-grid">
+    <section>
+      <h2>Kullanıcılar</h2>
+      {% for user in users %}
+      <article class="host-card" data-user-id="{{ user.id }}">
+        <strong>{{ user.name or user.email }}</strong>
+        <small>{{ user.email }}</small>
+        <button type="button" onclick="loadMessages('{{ user.id }}')">Sohbeti aç</button>
+      </article>
+      {% else %}
+      <p class="empty">Henüz kullanıcı yok.</p>
+      {% endfor %}
+    </section>
+    <section>
+      <h2>Konumlar</h2>
+      {% for item in locations %}
+      <article class="host-card">
+        <strong>{{ item.name or item.email or "Anonim" }}</strong>
+        <small>{{ item.latitude }}, {{ item.longitude }} · ±{{ item.accuracy }} m</small>
+        <time>{{ item.created_at }}</time>
+      </article>
+      {% else %}
+      <p class="empty">Henüz kullanıcı açıkça konum paylaşmadı.</p>
+      {% endfor %}
+    </section>
+    <section>
+      <h2>Ağ izleri</h2>
+      {% for item in traces %}
+      <article class="host-card">
+        <strong>{{ item.name or item.email or "Anonim" }}</strong>
+        <small>{{ item.ip_address }} · {{ item.path }}</small>
+        <time>{{ item.created_at }}</time>
+      </article>
+      {% else %}
+      <p class="empty">Ağ izi yok.</p>
+      {% endfor %}
+    </section>
+  </main>
+  <aside class="message-drawer" id="messageDrawer">
+    <button class="drawer-close" type="button" onclick="closeDrawer()">×</button>
+    <h2>Sohbet geçmişi</h2>
+    <div id="hostMessages"></div>
+  </aside>
+  <script>
+    async function loadMessages(userId) {
+      const result = await fetch("/api/host/messages/" + encodeURIComponent(userId));
+      const messages = await result.json();
+      const container = document.getElementById("hostMessages");
+      container.replaceChildren();
+      messages.forEach((message) => {
+        const paragraph = document.createElement("p");
+        paragraph.className = message.role;
+        const label = document.createElement("small");
+        label.textContent = message.role;
+        paragraph.append(label, document.createTextNode(message.content));
+        container.appendChild(paragraph);
+      });
+      document.getElementById("messageDrawer").classList.add("open");
+    }
+    function closeDrawer() {
+      document.getElementById("messageDrawer").classList.remove("open");
+    }
+    document.getElementById("hostLogout").addEventListener("click", async () => {
+      await fetch("/api/host/logout", {method: "POST"});
+      location.href = "/host-login";
+    });
+  </script>
+</body>
+</html>

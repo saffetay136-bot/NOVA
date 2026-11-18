@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NOVA — Giriş</title>
+  <link rel="stylesheet" href="/static/chat.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body class="login-page">
+  <main class="login-card">
+    <div class="nova-logo"><span></span>NOVA</div>
+    <h1>Merhaba.</h1>
+    <p>NOVA ile sohbet geçmişin ve kişisel bağlamın güvenle saklansın.</p>
+    {% if google_client_id %}
+      <div id="g_id_onload"
+           data-client_id="{{ google_client_id }}"
+           data-callback="handleGoogleCredential"
+           data-auto_prompt="false"></div>
+      <div class="g_id_signin" data-type="standard" data-theme="filled_black" data-size="large" data-text="signin_with"></div>
+    {% else %}
+      <button class="google-button" type="button" onclick="demoLogin()">Google ile devam et</button>
+      <small class="config-note">Demo giriş: GOOGLE_CLIENT_ID ortam değişkeni tanımlandığında gerçek Google doğrulaması açılır.</small>
+    {% endif %}
+  </main>
+  <script>
+    async function handleGoogleCredential(response) {
+      const result = await fetch("/api/auth/google", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({credential: response.credential})
+      });
+      if (result.ok) location.href = "/";
+      else alert((await result.json()).error || "Giriş başarısız");
+    }
+    async function demoLogin() {
+      const result = await fetch("/api/auth/google", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({credential: "demo"})
+      });
+      if (result.status === 401) {
+        alert("Gerçek Google girişi için GOOGLE_CLIENT_ID tanımlayın.");
+      }
+    }
+  </script>
+</body>
+</html>
